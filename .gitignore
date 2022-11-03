@@ -1,0 +1,4 @@
+.env
+./services/gdrive/token.json
+./services/gsheet/token.json
+node_modules/
