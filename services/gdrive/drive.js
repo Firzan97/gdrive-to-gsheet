@@ -180,7 +180,7 @@ export class GDrive {
                 //Set the range for the trip date 
                 //Remove if want all the dates
                 const start = moment().month(month).startOf('month')
-                const end = moment().month(month).startOf('month')
+                const end = moment().month(month).endOf('month')
 
                 //if the date not matching the one we enter in terminal, then ignore and proceed to next loop
                 if(fileDate < start || fileDate > end) continue
@@ -193,7 +193,8 @@ export class GDrive {
 
                       //Get all files
                       const files = await this.getFiles(trip.id, drive)
-
+                 
+                      // Looping the files
                       for(const file of files){
                         let fileName = file.name.toLocaleLowerCase()
                         
@@ -215,7 +216,7 @@ export class GDrive {
                           var newData = Object.keys(data).map((key) => data[key]);
 
                           //Put delay because google sheet api has a quota 300 request per minute
-                          await delay(450);
+                          await delay(700);
                           await appendData(auth,newData,spreadsheetId)
                           added++
 

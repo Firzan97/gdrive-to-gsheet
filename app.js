@@ -13,10 +13,15 @@ const port = process.env.PORT
 
     question().then(async (answer)=>{
         console.log("=======================")
-        console.log('Running up the script')
+        console.log('Getting authenticate')
         console.log("=======================")
 
         const authGDrive = await GDrive.authorizeGDrive()
+
+        console.log("=======================")
+        console.log('Running up the script')
+        console.log("=======================")
+
         GDrive.listFiles(authGDrive, answer)
     })
   })
