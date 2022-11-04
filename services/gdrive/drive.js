@@ -5,8 +5,9 @@ import {authenticate}  from '@google-cloud/local-auth';
 import {google} from 'googleapis';
 import { authorize, appendData } from '../gsheet/sheet.js'
 import moment from 'moment'
-import { delay, dataAssignment, checkFileType } from '../../utils/index.js'
+import { delay, dataAssignment, checkFileType, logging } from '../../utils/index.js'
 import * as dotenv from 'dotenv'
+import { Console } from 'console';
 dotenv.config()
 
 export class GDrive {
@@ -142,8 +143,6 @@ export class GDrive {
     const auth = await authorize()
     const drive = google.drive({version: 'v3', auth: authClient});
     let added= 0, count=0
-    let proceed = false
-
     let batchData =[]
     const batch = process.env.BATCH
 
@@ -164,7 +163,7 @@ export class GDrive {
     stations = stations.slice(start,lastIndex+1)
     
     // Looping the stations
-    for (const station of stations) {
+    for (const [stationIndex, station]  of stations.entries()) {
       // Get the type of trips
       const types = await this.getTypes(station.id, drive)
 
@@ -178,7 +177,7 @@ export class GDrive {
               const dates = await this.getDates(type.id, drive)
               
               // Looping the dates
-              for(const date of dates){
+              for(const [dateIndex, date] of dates.entries()){
 
                 const fileDate = moment(date.name, 'YYYY-MM-DD')
                 //Set the range for the trip date 
@@ -195,25 +194,25 @@ export class GDrive {
                   const trips = await this.getTrips(date.id, drive)
 
                   // Looping the trips
-                  for(const trip of trips){
+                  for(const [tripIndex,trip] of trips.entries()){
 
                       //Get all files
                       const files = await this.getFiles(trip.id, drive)
 
                  
                       // Looping the files
-                      for(const [index, value] of files){
-                        let fileName = value.name.toLocaleLowerCase()
+                      for(let [index, station] of files.entries()){
+                        let fileName = station.name.toLocaleLowerCase()
                         
                         //Trip Files type
                         const tripFileTypes = checkFileType(fileName)
 
                         //Data to be saved
-                        const data = dataAssignment(station, type, date, trip, value, tripFileTypes)
-                        
+                        const data = dataAssignment(station, type, date, trip, station, tripFileTypes)
+                        count++
+
                         //Logging
                         console.log(count)
-                        
                            //Double validate, if the date matching, then add it,else ignore
                         if(fileDate >= start && fileDate<=end ){
                           //Convert object to array
@@ -234,7 +233,7 @@ export class GDrive {
                           }
 
                           //If last file and the total data less than targeted batch
-                          if(index === files.length-1 && batchData.length < parseInt(batch))
+                          if(index === files.length-1 && stationIndex === stations.length-1 && dateIndex=== dates.length-1 && tripIndex=== trips.length-1  && batchData.length < parseInt(batch))
                           {
                             await appendData(auth,batchData,spreadsheetId)
                             added = added + batchData.length
