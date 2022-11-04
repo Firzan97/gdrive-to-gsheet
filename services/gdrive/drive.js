@@ -201,14 +201,14 @@ export class GDrive {
 
                  
                       // Looping the files
-                      for(let [index, station] of files.entries()){
-                        let fileName = station.name.toLocaleLowerCase()
+                      for(let [index, file] of files.entries()){
+                        let fileName = file.name.toLocaleLowerCase()
                         
                         //Trip Files type
-                        const tripFileTypes = checkFileType(fileName)
+                        const tripFileTypes = {...checkFileType(fileName)}
 
                         //Data to be saved
-                        const data = dataAssignment(station, type, date, trip, station, tripFileTypes)
+                        const data = dataAssignment(station, type, date, trip, file, tripFileTypes)
                         count++
 
                         //Logging

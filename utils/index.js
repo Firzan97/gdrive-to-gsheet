@@ -5,7 +5,7 @@ export function delay(ms) {
 }
 
 export function checkFileType(fileName){
-    var fileTypes = tripFileTypes
+    var fileTypes = {...tripFileTypes}
 
     if (fileName.indexOf('general declaration') >= 0) {
         fileTypes.isGeneralDeclaration = 1;
