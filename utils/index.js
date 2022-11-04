@@ -50,3 +50,14 @@ export function dataAssignment(station, type, date, trip, file, tripFileTypes){
     return data
 }
 
+
+export function logging(stationName,typeName,dateName,tripName,added){
+    //Logging
+    console.log('===========================')
+    console.log(stationName)
+    console.log(typeName)
+    console.log(dateName)
+    console.log(tripName)   
+    console.log('Total added - ' + added)
+    console.log('==========================')
+}

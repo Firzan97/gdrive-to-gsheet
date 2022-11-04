@@ -202,46 +202,47 @@ export class GDrive {
 
                  
                       // Looping the files
-                      for(const file of files){
-                        let fileName = file.name.toLocaleLowerCase()
+                      for(const [index, value] of files){
+                        let fileName = value.name.toLocaleLowerCase()
                         
                         //Trip Files type
                         const tripFileTypes = checkFileType(fileName)
 
                         //Data to be saved
-                        const data = dataAssignment(station, type, date, trip, file, tripFileTypes)
+                        const data = dataAssignment(station, type, date, trip, value, tripFileTypes)
                         
-                        count++
+                        //Logging
                         console.log(count)
-
-                        // if(!proceed)
-                        //    proceed = '1cwFyoLYeXbAFIwAneubPAbwVUKmfjno_' === file.id
                         
                            //Double validate, if the date matching, then add it,else ignore
                         if(fileDate >= start && fileDate<=end ){
                           //Convert object to array
                           var newData = Object.keys(data).map((key) => data[key]);
 
+                          //Accumulate data until reaching batch value
                           batchData.push(newData) 
-                          //Put delay because google sheet api has a quota 300 request per minute
-                          // await delay(300);
 
-                          if(batchData.length === batch){
+                          //If the batch reached the batch length
+                          if(batchData.length === parseInt(batch)){
+
                             await appendData(auth,batchData,spreadsheetId)
-                            batchData = []
                             added = added + 100
+                            batchData = []
 
                             //Logging
-                            console.log('===========================')
-                            console.log(station.name)
-                            console.log(type.name)
-                            console.log(date.name)
-                            console.log(trip.name)   
-                            console.log('Total added - ' + added)
-                            console.log('==========================')
+                            logging(station.name,type.name,date.name,trip.name,added)
                           }
 
+                          //If last file and the total data less than targeted batch
+                          if(index === files.length-1 && batchData.length < parseInt(batch))
+                          {
+                            await appendData(auth,batchData,spreadsheetId)
+                            added = added + batchData.length
+                            batchData = []
 
+                            //Logging
+                            logging(station.name,type.name,date.name,trip.name,added)
+                          }
                         }
                       }
                   }
