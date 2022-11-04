@@ -80,7 +80,7 @@ export async function authorize() {
  */
  export async function appendData(auth, data, spreadsheetId) {
   const sheets = google.sheets({version: 'v4', auth});
-  let values = [data]
+  let values = data
   const resource = {
     values,
   };
@@ -88,7 +88,7 @@ export async function authorize() {
   try {
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: 'A:E',
+      range: 'A:H',
       resource,
       valueInputOption: 'USER_ENTERED'
      });

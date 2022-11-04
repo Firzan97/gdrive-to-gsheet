@@ -6,8 +6,8 @@ import {google} from 'googleapis';
 import { authorize, appendData } from '../gsheet/sheet.js'
 import moment from 'moment'
 import { delay, dataAssignment, checkFileType } from '../../utils/index.js'
-import { Console } from 'console';
-
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 export class GDrive {
   // If modifying these scopes, delete token.json.
@@ -141,7 +141,11 @@ export class GDrive {
    static async listFiles(authClient, {driveId, spreadsheetId, month, startStation, endStation}) {
     const auth = await authorize()
     const drive = google.drive({version: 'v3', auth: authClient});
-    let added= 0
+    let added= 0, count=0
+    let proceed = false
+
+    let batchData =[]
+    const batch = process.env.BATCH
 
     //Get Stations
     let stations = await this.getStations(drive, driveId)
@@ -182,6 +186,8 @@ export class GDrive {
                 const start = moment().month(month).startOf('month')
                 const end = moment().month(month).endOf('month')
 
+    
+
                 //if the date not matching the one we enter in terminal, then ignore and proceed to next loop
                 if(fileDate < start || fileDate > end) continue
 
@@ -193,6 +199,7 @@ export class GDrive {
 
                       //Get all files
                       const files = await this.getFiles(trip.id, drive)
+
                  
                       // Looping the files
                       for(const file of files){
@@ -204,26 +211,36 @@ export class GDrive {
                         //Data to be saved
                         const data = dataAssignment(station, type, date, trip, file, tripFileTypes)
                         
-                        //Logging
-                        console.log(station.name)
-                        console.log(type.name)
-                        console.log(date.name)
-                        console.log(trip.name)                    
+                        count++
+                        console.log(count)
 
-                        //Double validate, if the date matching, then add it,else ignore
-                        if(fileDate >= start && fileDate<=end){
+                        // if(!proceed)
+                        //    proceed = '1cwFyoLYeXbAFIwAneubPAbwVUKmfjno_' === file.id
+                        
+                           //Double validate, if the date matching, then add it,else ignore
+                        if(fileDate >= start && fileDate<=end ){
                           //Convert object to array
                           var newData = Object.keys(data).map((key) => data[key]);
 
+                          batchData.push(newData) 
                           //Put delay because google sheet api has a quota 300 request per minute
-                          await delay(700);
-                          await appendData(auth,newData,spreadsheetId)
-                          added++
+                          // await delay(300);
 
-                          //Logging
-                          console.log('===========================')
-                          console.log('Total added - ' + added)
-                          console.log('==========================')
+                          if(batchData.length === batch){
+                            await appendData(auth,batchData,spreadsheetId)
+                            batchData = []
+                            added = added + 100
+
+                            //Logging
+                            console.log('===========================')
+                            console.log(station.name)
+                            console.log(type.name)
+                            console.log(date.name)
+                            console.log(trip.name)   
+                            console.log('Total added - ' + added)
+                            console.log('==========================')
+                          }
+
 
                         }
                       }
