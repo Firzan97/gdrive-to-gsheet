@@ -13,7 +13,7 @@ const port = process.env.PORT
 
     question().then(async (answer)=>{
         console.log("=======================")
-        console.log('Getting authenticate')
+        console.log('Getting authenticate the GDrive')
         console.log("=======================")
 
         const authGDrive = await GDrive.authorizeGDrive()

@@ -139,6 +139,10 @@ export class GDrive {
    * @param {OAuth2Client} authClient An authorized OAuth2 client.
    */
    static async listFiles(authClient, {driveId, spreadsheetId, month, startStation, endStation}) {
+    console.log("=======================")
+    console.log('Getting authenticate the GSheet')
+    console.log("=======================")
+
     const auth = await authorize()
     const drive = google.drive({version: 'v3', auth: authClient});
     let added= 0, count=0
