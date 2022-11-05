@@ -5,9 +5,8 @@ import {authenticate}  from '@google-cloud/local-auth';
 import {google} from 'googleapis';
 import { authorize, appendData } from '../gsheet/sheet.js'
 import moment from 'moment'
-import { delay, dataAssignment, checkFileType, logging } from '../../utils/index.js'
+import { dataAssignment, checkFileType, logging } from '../../utils/index.js'
 import * as dotenv from 'dotenv'
-import { Console } from 'console';
 dotenv.config()
 
 export class GDrive {
@@ -180,26 +179,22 @@ export class GDrive {
               for(const [dateIndex, date] of dates.entries()){
 
                 const fileDate = moment(date.name, 'YYYY-MM-DD')
+
                 //Set the range for the trip date 
                 //Remove if want all the dates
                 const start = moment().month(month).startOf('month')
                 const end = moment().month(month).endOf('month')
 
-    
-
                 //if the date not matching the one we enter in terminal, then ignore and proceed to next loop
                 if(fileDate < start || fileDate > end) continue
-
                   //Get all trips
                   const trips = await this.getTrips(date.id, drive)
 
                   // Looping the trips
                   for(const [tripIndex,trip] of trips.entries()){
-
                       //Get all files
                       const files = await this.getFiles(trip.id, drive)
-
-                 
+ 
                       // Looping the files
                       for(let [index, file] of files.entries()){
                         let fileName = file.name.toLocaleLowerCase()
@@ -213,7 +208,8 @@ export class GDrive {
 
                         //Logging
                         console.log(count)
-                           //Double validate, if the date matching, then add it,else ignore
+                        
+                        //Double validate, if the date matching, then add it,else ignore
                         if(fileDate >= start && fileDate<=end ){
                           //Convert object to array
                           var newData = Object.keys(data).map((key) => data[key]);
@@ -241,6 +237,8 @@ export class GDrive {
 
                             //Logging
                             logging(station.name,type.name,date.name,trip.name,added)
+
+                            console.log("Done!!!")
                           }
                         }
                       }

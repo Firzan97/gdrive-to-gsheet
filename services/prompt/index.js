@@ -12,7 +12,7 @@ export function question() {
     },
     {
     name: 'spreadsheetId',
-    message: 'Enter the spreadshee ID',
+    message: 'Enter the spreadsheet ID',
     type: 'input',
     default: '1M1vrshiJyn4d28qSP-oWyC5zTEPaieSYVZ-v_w1era8',
     },
@@ -31,11 +31,11 @@ export function question() {
     name: 'startStation',
     message: 'Start with which station?',
     type: 'input',
-  },
-  {
+    },
+    {
     name: 'endStation',
     message: 'End with which station?',
     type: 'input',
-  },
+    },
  ])
 }
