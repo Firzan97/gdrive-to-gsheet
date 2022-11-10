@@ -7,6 +7,7 @@ import { authorize, appendData } from '../gsheet/sheet.js'
 import moment from 'moment'
 import { dataAssignment, checkFileType, logging } from '../../utils/index.js'
 import * as dotenv from 'dotenv'
+import { Console } from 'console';
 dotenv.config()
 
 export class GDrive {
@@ -231,25 +232,23 @@ export class GDrive {
                             //Logging
                             logging(station.name,type.name,date.name,trip.name,added)
                           }
-
-                          //If last file and the total data less than targeted batch
-                          if(index === files.length-1 && stationIndex === stations.length-1 && dateIndex=== dates.length-1 && tripIndex=== trips.length-1  && batchData.length < parseInt(batch))
-                          {
-                            await appendData(auth,batchData,spreadsheetId)
-                            added = added + batchData.length
-                            batchData = []
-
-                            //Logging
-                            logging(station.name,type.name,date.name,trip.name,added)
-
-                            console.log("Done!!!")
-                          }
                         }
                       }
                   }
               }
           }
       }
+    }
+
+    if(batchData.length>0){
+      console.log("Last batch data not reaching total batch ${batch} will be append until the loop is done!")
+
+      await appendData(auth,batchData,spreadsheetId)
+      added = added + batchData.length
+      batchData = []
+
+      console.log("Done!!!")
+
     }
   }
 }
