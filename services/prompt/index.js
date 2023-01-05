@@ -1,20 +1,31 @@
 import inquirer from 'inquirer';
-import { months } from '../../utils/constants.js'
+import { months, years} from '../../utils/constants.js'
 
 export function question() {
  return inquirer
  .prompt([
     {
-    name: 'driveId',
-    message: 'Enter the drive folder ID (psstt* The folder that have list of stations)',
-    type: 'input',
-    default: '1UjoNSHg7pPewTGTPuoMkfyOAuPMGje0B',
+     name: 'driveId',
+     message: 'Enter the drive folder ID (psstt* The folder that have list of stations)',
+     type: 'input',
+     default: '1UjoNSHg7pPewTGTPuoMkfyOAuPMGje0B',
     },
     {
-    name: 'spreadsheetId',
-    message: 'Enter the spreadsheet ID',
-    type: 'input',
-    default: '1M1vrshiJyn4d28qSP-oWyC5zTEPaieSYVZ-v_w1era8',
+     name: 'spreadsheetId',
+     message: 'Enter the spreadsheet ID',
+     type: 'input',
+     default: '1M1vrshiJyn4d28qSP-oWyC5zTEPaieSYVZ-v_w1era8',
+    },
+    {
+     name: 'year',
+     message: 'What year?',
+     type: 'list',
+     choices: years,
+     validate: (answer) =>{
+        if(answer<2022 || answer> 2030){
+            return 'Wrong Year!'
+        }
+     }
     },
    {
      name: 'month',
@@ -28,14 +39,14 @@ export function question() {
     }
    },
    {
-    name: 'startStation',
-    message: 'Start with which station?',
-    type: 'input',
+     name: 'startStation',
+     message: 'Start with which station?',
+     type: 'input',
     },
     {
-    name: 'endStation',
-    message: 'End with which station?',
-    type: 'input',
+     name: 'endStation',
+     message: 'End with which station?',
+     type: 'input',
     },
  ])
 }
